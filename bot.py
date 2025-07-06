@@ -1,6 +1,6 @@
 import os
 from aiohttp import web
-from aiogram import Bot, Dispatcher, F, types
+from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
@@ -27,8 +27,7 @@ main_menu = ReplyKeyboardMarkup(
         [KeyboardButton(text="/start"), KeyboardButton(text="/help")],
         [KeyboardButton(text="/choosemode"), KeyboardButton(text="/currentmode")],
     ],
-    resize_keyboard=True,
-    one_time_keyboard=False
+    resize_keyboard=True
 )
 
 @dp.message(Command("start"))
@@ -115,9 +114,10 @@ async def ai_handler(message: Message):
             response_text += f"🔸 *{error}* → *{replacement}*\n_{message_txt}_\n\n"
         await message.answer(response_text, parse_mode="Markdown")
 
+# webhook setup
 async def on_startup(bot: Bot):
     await bot.set_webhook(WEBHOOK_URL)
-    print("Webhook set!")
+    print(f"✅ Webhook set at {WEBHOOK_URL}")
 
 app = web.Application()
 SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path="/webhook")
