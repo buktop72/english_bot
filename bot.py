@@ -96,13 +96,12 @@ async def current_mode(message: Message):
 
 @dp.message()
 async def ai_handler(message: Message):
-    await message.answer("Thinking... 🤔")
     prompt = user_prompts.get(message.chat.id, MODES["teacher"])
-    reply = await query_openrouter(message.text, prompt)
-    await message.answer(reply, reply_markup=main_menu)
 
+    # LanguageTool автопроверка
     result = await check_text_with_languagetool(message.text)
     matches = result.get("matches", [])
+
     if matches:
         response_text = "✏️ *Language check:*\n\n"
         for match in matches:
@@ -113,6 +112,12 @@ async def ai_handler(message: Message):
             replacement = match["replacements"][0]["value"] if match["replacements"] else "—"
             response_text += f"🔸 *{error}* → *{replacement}*\n_{message_txt}_\n\n"
         await message.answer(response_text, parse_mode="Markdown")
+
+    # OpenRouter ответ
+    await message.answer("Thinking... 🤔")
+    reply = await query_openrouter(message.text, prompt)
+    await message.answer(reply, reply_markup=main_menu)
+
 
 # webhook setup
 async def on_startup(bot: Bot):
