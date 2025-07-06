@@ -2,8 +2,6 @@ import aiohttp
 import os
 from config import OPENROUTER_API_KEY
 
-print(f"API KEY: {OPENROUTER_API_KEY}")
-
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 headers = {
