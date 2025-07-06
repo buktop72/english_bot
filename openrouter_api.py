@@ -9,18 +9,6 @@ headers = {
     "Content-Type": "application/json"
 }
 
-async def query_openrouter(prompt: str) -> str:
-    payload = {
-        "model": "mistralai/mistral-7b-instruct:free",
-        "messages": [
-            {"role": "system",
-             "content": "You are a friendly English teacher bot. Speak concisely, correct mistakes, explain grammar rules when asked. Keep replies short and conversational."},
-            {"role": "user", "content": prompt}
-        ],
-        "max_tokens": 300,
-        "temperature": 0.7
-    }
-
     async with aiohttp.ClientSession() as session:
         async with session.post(API_URL, headers=headers, json=payload) as response:
             data = await response.json()
