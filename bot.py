@@ -1,5 +1,4 @@
 import os
-import asyncio
 from aiohttp import web
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
@@ -119,31 +118,24 @@ async def ai_handler(message: Message):
     reply = await query_openrouter(message.text, prompt)
     await message.answer(reply, reply_markup=main_menu)
 
-# 📌 Keep-alive функция
-async def keep_alive():
-    import aiohttp
-    while True:
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(WEBHOOK_URL.replace("/webhook", "/")) as response:
-                    print("Keep-alive ping:", response.status)
-        except Exception as e:
-            print("Keep-alive error:", e)
-        await asyncio.sleep(300)  # каждые 5 минут
-
-# 📌 Webhook setup
+# Webhook setup
 async def on_startup(bot: Bot):
     await bot.set_webhook(WEBHOOK_URL)
     print(f"✅ Webhook set at {WEBHOOK_URL}")
-    asyncio.create_task(keep_alive())
 
-# 📌 Запуск aiohttp
+# Простой эндпоинт для UptimeRobot
+async def handle_root(request):
+    return web.Response(text="✅ Bot is alive!")
+
 app = web.Application()
+app.router.add_get("/", handle_root)
+
 SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path="/webhook")
 setup_application(app, dp, bot=bot, on_startup=on_startup)
 
 if __name__ == "__main__":
     web.run_app(app, host="0.0.0.0", port=int(os.getenv("PORT", 10000)))
+
 
 
 
